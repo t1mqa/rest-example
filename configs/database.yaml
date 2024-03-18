@@ -1,0 +1,6 @@
+postgres:
+  host: "localhost"  # something else?
+  port: 5432
+  user: "postgres"
+  password: "STORED_INTO_DOTENV_FILE"
+  dbname: "PROJECT_NAME"

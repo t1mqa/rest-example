@@ -1,0 +1,3 @@
+env: "local" # local, prod
+# other env settings that won't be tracked in git.
+dbPassword: ""
