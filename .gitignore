@@ -22,3 +22,6 @@ go.work
 
 # Jetbrains files
 .idea
+
+# Log file to be empty
+logs/logs.json
