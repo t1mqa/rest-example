@@ -89,6 +89,6 @@ func (l *SlogLogger) Fatal(msg string, keysAndValues ...any) {
 		panic(msg)
 	} else {
 		l.logger.Error("logging call with uneven key/value pairs")
-		panic(msg) // anyway runtime drop
+		panic(msg) // В любом случае паникуем, т.к. это ожидаемое поведение
 	}
 }
