@@ -22,8 +22,3 @@ go.work
 
 # Jetbrains files
 .idea
-
-
-
-# UNTRACKED FILE AFTER COMMIT 3153dbc
-configs/project.yaml
