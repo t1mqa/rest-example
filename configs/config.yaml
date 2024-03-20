@@ -4,9 +4,9 @@ EnvSettings:
 postgres:
   host: "localhost"
   port: 5432
-  user: "postgres"
-  password: "STORED_SOMEWHERE_ELSE"  # Do NOT track this by git in real projects
-  dbname: "PROJECT_NAME"
+  user: "contester"
+  password: "contester_pass"  # Do NOT track this by git in real projects
+  dbname: "example_database"
 
 ServerSettings:
   port: 8000
