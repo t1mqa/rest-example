@@ -6,12 +6,10 @@ import (
 )
 
 func main() {
-	cfgReader := cfg.NewViperConfigReader()
-	appConfig := cfgReader.MustGetConfig()
+	appConfig := cfg.NewViperConfigReader()
 
-	log := logger.NewSlogLogger()
-	log.MustSetupLogger(appConfig.Env.EnvType)
-	log.Info("Logger started")
+	log := logger.NewSlogLogger(appConfig.Env.EnvType)
+	log.Info("Logger started", "key", "value")
 
 	_ = log
 	_ = appConfig

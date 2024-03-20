@@ -2,7 +2,7 @@ EnvSettings:
   env: "local" # local, prod
 
 postgres:
-  host: "localhost"  # something else?
+  host: "localhost"
   port: 5432
   user: "postgres"
   password: "STORED_SOMEWHERE_ELSE"  # Do NOT track this by git in real projects

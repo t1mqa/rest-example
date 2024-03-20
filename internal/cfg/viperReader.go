@@ -7,11 +7,13 @@ import (
 type ViperConfigReader struct {
 }
 
-func NewViperConfigReader() *ViperConfigReader {
+func NewViperConfigReader() AppConfig {
+	v := &ViperConfigReader{}
 	viper.SetConfigName("config")
 	viper.AddConfigPath("configs")
 	viper.SetConfigType("yaml")
-	return &ViperConfigReader{}
+	appCfg := v.MustGetConfig()
+	return appCfg
 }
 
 func (v *ViperConfigReader) MustGetConfig() AppConfig {

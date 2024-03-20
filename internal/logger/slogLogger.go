@@ -16,30 +16,28 @@ type SlogLogger struct {
 	logger *slog.Logger
 }
 
-func NewSlogLogger() *SlogLogger {
-	// При создании логгера мы не назначаем ему конкретный обработчик.
-	// В дальнейшем обязательно вызвать MustSetupLogger
-	return &SlogLogger{}
+func NewSlogLogger(envType string) *SlogLogger {
+	l := &SlogLogger{}
+	l.MustSetupLogger(envType)
+	return l
 }
 
-func (l *SlogLogger) MustSetupLogger(env string) {
+func (l *SlogLogger) MustSetupLogger(envType string) {
 	var handler slog.Handler
 
-	switch env {
+	switch envType {
 	case envProd:
 		// В случае продакшна - храним в JSON файле
-
 		_, err := os.Stat("logs")
-		if errors.Is(err, os.ErrNotExist) {
-			panic("logs folder doesnt exists")
-		} else if err != nil {
+		if err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				panic("logs folder doesnt exists")
+			}
 			panic(err)
 		}
 
 		file, err := os.OpenFile("logs/logs.json", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-		if errors.Is(err, os.ErrNotExist) {
-			panic("logs.json file doesnt exists")
-		} else if err != nil {
+		if err != nil {
 			panic(err)
 		}
 
@@ -47,11 +45,9 @@ func (l *SlogLogger) MustSetupLogger(env string) {
 
 	case envLocal:
 		// В случае локала - принтимся в консоль
+		handler = slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelDebug})
 
-		handler = slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})
 	default:
-		//
-
 		panic("something wrong with env config settings")
 	}
 
@@ -59,36 +55,36 @@ func (l *SlogLogger) MustSetupLogger(env string) {
 }
 
 func (l *SlogLogger) Info(msg string, keysAndValues ...any) {
-	if len(keysAndValues)%2 == 0 {
-		l.logger.Info(msg, keysAndValues...)
-	} else {
-		l.logger.Error("logging call with uneven key/value pairs")
-	}
+	l.logger.Info(msg, keysAndValues...)
+	// слог вполне себе проверит, сколько их там, но выведет сообщение с BADKEY
+	// поэтому хочу оставить проверку во всех случаях
+
+	l.checkUnevenKeyError(len(keysAndValues))
 }
 
 func (l *SlogLogger) Warn(msg string, keysAndValues ...any) {
-	if len(keysAndValues)%2 == 0 {
-		l.logger.Warn(msg, keysAndValues...)
-	} else {
-		l.logger.Error("logging call with uneven key/value pairs")
-	}
+	l.logger.Warn(msg, keysAndValues...)
+
+	l.checkUnevenKeyError(len(keysAndValues))
 }
 
 func (l *SlogLogger) Error(msg string, keysAndValues ...any) {
-	if len(keysAndValues)%2 == 0 {
-		l.logger.Error(msg, keysAndValues...)
-	} else {
-		l.logger.Error("logging call with uneven key/value pairs")
-	}
+	l.logger.Error(msg, keysAndValues...)
+
+	l.checkUnevenKeyError(len(keysAndValues))
 }
 
-// Fatal паникует после Error
+// Fatal паникует после Error лога
 func (l *SlogLogger) Fatal(msg string, keysAndValues ...any) {
-	if len(keysAndValues)%2 == 0 {
-		l.logger.Error(msg, keysAndValues...)
-		panic(msg)
-	} else {
+	l.logger.Error(msg, keysAndValues...)
+
+	l.checkUnevenKeyError(len(keysAndValues))
+
+	panic(msg)
+}
+
+func (l *SlogLogger) checkUnevenKeyError(keysLength int) {
+	if keysLength%2 != 0 {
 		l.logger.Error("logging call with uneven key/value pairs")
-		panic(msg) // В любом случае паникуем, т.к. это ожидаемое поведение
 	}
 }
